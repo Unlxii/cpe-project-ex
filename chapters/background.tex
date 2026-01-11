@@ -1,113 +1,250 @@
 \chapter{\ifenglish Background Knowledge and Theory\else ทฤษฎีที่เกี่ยวข้อง\fi}
 
-การทำโครงงาน เริ่มต้นด้วยการศึกษาค้นคว้า ทฤษฎีที่เกี่ยวข้อง หรือ งานวิจัย/โครงงาน ที่เคยมีผู้นำเสนอไว้แล้ว ซึ่งเนื้อหาในบทนี้ก็จะเกี่ยวกับการอธิบายถึงสิ่งที่เกี่ยวข้องกับโครงงาน เพื่อให้ผู้อ่านเข้าใจเนื้อหาในบทถัดๆ ไปได้ง่ายขึ้น
+ในบทนี้จะกล่าวถึงทฤษฎี แนวคิด และเทคโนโลยีที่เกี่ยวข้องกับการพัฒนาระบบ VisScan รวมถึงมาตรฐานสากลด้านความปลอดภัยที่นำมาประยุกต์ใช้ในโครงงาน เพื่อให้ผู้อ่านมีความเข้าใจพื้นฐานที่จำเป็นก่อนศึกษารายละเอียดของระบบในบทถัดไป
 
-\section{The first section}
-The text for Section 1 goes here.
+\section{DevSecOps และหลักการ Shift-Left Security}
 
-\section{Second section}
-Section 2 text.
+DevSecOps เป็นแนวทางในการพัฒนาซอฟต์แวร์ที่บูรณาการความปลอดภัย (Security) เข้ากับกระบวนการ Development และ Operations อย่างเป็นระบบ~\cite{devsecops2019} โดยมีเป้าหมายหลักคือการทำให้ความปลอดภัยเป็นความรับผิดชอบร่วมกันของทุกคนในทีม ไม่ใช่แค่ทีมความปลอดภัยเท่านั้น
 
-\subsection{Subsection heading goes here}
+\subsection{หลักการสำคัญของ DevSecOps}
 
-Subsection 1 text
+\begin{enumerate}
+    \item \textbf{Automation}: การตรวจสอบความปลอดภัยต้องทำงานอัตโนมัติและเป็นส่วนหนึ่งของ CI/CD Pipeline เพื่อไม่ให้เป็นอุปสรรคต่อความเร็วในการพัฒนา
+    
+    \item \textbf{Shift-Left Security}: การเลื่อนการตรวจสอบความปลอดภัยมาทำในช่วงต้นของวงจรการพัฒนา (Development Phase) แทนที่จะรอจนถึงช่วงท้าย (Production) ซึ่งจะช่วยลดต้นทุนในการแก้ไขปัญหา
+    
+    \item \textbf{Continuous Monitoring}: การตรวจสอบและเฝ้าระวังความปลอดภัยอย่างต่อเนื่องตลอดวงจรชีวิตของแอปพลิเคชัน
+    
+    \item \textbf{Collaboration}: การสร้างวัฒนธรรมความร่วมมือระหว่างทีมพัฒนา ทีมปฏิบัติการ และทีมความปลอดภัย
+\end{enumerate}
 
-\subsubsection{Subsubsection 1 heading goes here}
-Subsubsection 1 text
+หลักการ Shift-Left Security มีความสำคัญอย่างยิ่ง เนื่องจากการตรวจพบช่องโหว่ในระยะแรก ๆ ของการพัฒนาจะช่วยลดต้นทุนในการแก้ไขได้มากกว่าการค้นพบในระยะหลัง ตามการศึกษาพบว่าต้นทุนในการแก้ไขช่องโหว่ในระหว่างการพัฒนาต่ำกว่าการแก้ไขในระบบที่ทำงานจริงถึง 30 เท่า
 
-\subsubsection{Subsubsection 2 heading goes here}
-Subsubsection 2 text
+\section{วิธีการตรวจสอบความปลอดภัยแอปพลิเคชัน}
 
-\section{Third section}
-Section 3 text. The dielectric constant\index{dielectric constant}
-at the air-metal interface determines
-the resonance shift\index{resonance shift} as absorption or capture occurs
-is shown in Equation~\eqref{eq:dielectric}:
+การตรวจสอบความปลอดภัยของแอปพลิเคชันมีหลายวิธีการ โดยแต่ละวิธีมีจุดแข็งและจุดอ่อนที่แตกต่างกัน ตามคำแนะนำของ NIST SP 800-115~\cite{nist800-115} การตรวจสอบความปลอดภัยที่ครอบคลุมควรใช้หลายวิธีการร่วมกัน
 
-\begin{equation}\label{eq:dielectric}
-k_1=\frac{\omega}{c({1/\varepsilon_m + 1/\varepsilon_i})^{1/2}}=k_2=\frac{\omega
-\sin(\theta)\varepsilon_\mathit{air}^{1/2}}{c}
-\end{equation}
+\subsection{Static Application Security Testing (SAST)}
 
-\noindent
-where $\omega$ is the frequency of the plasmon, $c$ is the speed of
-light, $\varepsilon_m$ is the dielectric constant of the metal,
-$\varepsilon_i$ is the dielectric constant of neighboring insulator,
-and $\varepsilon_\mathit{air}$ is the dielectric constant of air.
+SAST เป็นวิธีการตรวจสอบความปลอดภัยโดยวิเคราะห์ซอร์สโค้ดหรือ Compiled Code โดยไม่ต้องรันแอปพลิเคชัน~\cite{sast2018} ข้อดีของ SAST คือ:
 
-\section{About using figures in your report}
+\begin{itemize}
+    \item สามารถตรวจจับปัญหาได้ในระยะแรกของการพัฒนา
+    \item วิเคราะห์โค้ดได้ครอบคลุมทุก Path ไม่พลาดส่วนที่ไม่ค่อยถูกเรียกใช้
+    \item ระบุตำแหน่งที่แน่นอนของช่องโหว่ในโค้ด ทำให้แก้ไขได้ง่าย
+    \item ไม่ต้องการสภาพแวดล้อมที่รันได้จริง
+\end{itemize}
 
-% define a command that produces some filler text, the lorem ipsum.
-\newcommand{\loremipsum}{
-  \textit{Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-  eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-  minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-  aliquip ex ea commodo consequat. Duis aute irure dolor in
-  reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-  pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-  culpa qui officia deserunt mollit anim id est laborum.}\par}
+ข้อจำกัดของ SAST:
+\begin{itemize}
+    \item อาจมี False Positive สูง ต้องใช้เวลาในการกรองผลลัพธ์
+    \item ไม่สามารถตรวจจับปัญหาที่เกิดจากการตั้งค่า Runtime หรือ Infrastructure
+    \item ต้องการความเข้าใจเกี่ยวกับภาษาและ Framework ที่ใช้
+\end{itemize}
 
-\begin{figure}
-  \centering
+\subsection{Dynamic Application Security Testing (DAST)}
 
-  \fbox{
-     \parbox{.6\textwidth}{\loremipsum}
-  }
+DAST เป็นวิธีการตรวจสอบโดยการทดสอบแอปพลิเคชันที่กำลังทำงานจริง (Black-box Testing) โดยไม่ต้องเข้าถึงซอร์สโค้ด ข้อดีของ DAST:
 
-  % To include an image in the figure, say myimage.pdf, you could use
-  % the following code. Look up the documentation for the package
-  % graphicx for more information.
-  % \includegraphics[width=\textwidth]{myimage}
+\begin{itemize}
+    \item ตรวจจับปัญหาที่เกิดขึ้นในสภาพแวดล้อมจริง
+    \item มี False Positive ต่ำกว่า SAST
+    \item ไม่ต้องการความรู้เกี่ยวกับภาษาหรือเทคโนโลยีที่ใช้พัฒนา
+\end{itemize}
 
-  \caption[Sample figure]{This figure is a sample containing \gls{lorem ipsum},
-  showing you how you can include figures and glossary in your report.
-  You can specify a shorter caption that will appear in the List of Figures.}
-  \label{fig:sample-figure}
-\end{figure}
+ข้อจำกัดของ DAST:
+\begin{itemize}
+    \item ตรวจจับปัญหาได้ช้ากว่า SAST เนื่องจากทำในระยะหลัง
+    \item อาจพลาด Code Path ที่ไม่ถูกเรียกใช้ในระหว่างการทดสอบ
+    \item ไม่สามารถระบุตำแหน่งที่แน่นอนในโค้ด
+\end{itemize}
 
-Using \verb.\label. and \verb.\ref. commands allows us to refer to
-figures easily. If we can refer to Figures
-\ref{fig:walrus} and \ref{fig:sample-figure} by name in the {\LaTeX}
-source code, then we will not need to update the code that refers to it
-even if the placement or ordering of the figures changes.
+\subsection{Software Composition Analysis (SCA)}
 
-\loremipsum\loremipsum
+SCA เป็นเครื่องมือสำหรับตรวจสอบช่องโหว่ใน Third-party Libraries และ Dependencies ที่แอปพลิเคชันใช้งาน โดยเปรียบเทียบกับฐานข้อมูลช่องโหว่ที่ทราบ เช่น National Vulnerability Database (NVD) ข้อดีของ SCA:
 
-% This code demonstrates how to get a landscape table or figure. It
-% uses the package lscape to turn everything but the page number into
-% landscape orientation. Everything should be included within an
-% \afterpage{ .... } to avoid causing a page break too early.
-\afterpage{
-  \begin{landscape}
-  \begin{table}
-    \caption{Sample landscape table}
-    \label{tab:sample-table}
+\begin{itemize}
+    \item ตรวจจับช่องโหว่ใน Dependencies ที่นักพัฒนาอาจไม่รู้
+    \item ให้ข้อมูลเกี่ยวกับ License Compliance
+    \item ทำงานได้รวดเร็ว เนื่องจากเปรียบเทียบกับฐานข้อมูลที่มีอยู่
+\end{itemize}
 
-    \centering
+ระบบ VisScan ใช้แนวทางผสมผสานระหว่าง SAST (ผ่าน Semgrep) และ SCA (ผ่าน Trivy) เพื่อให้ได้ผลการตรวจสอบที่ครอบคลุมมากที่สุด
 
-    \begin{tabular}{c||c|c}
-        Year & A & B \\
-        \hline\hline
-        1989 & 12 & 23 \\
-        1990 & 4 & 9 \\
-        1991 & 3 & 6 \\
-    \end{tabular}
-  \end{table}
-  \end{landscape}
-}
+\section{มาตรฐานและแนวทางด้านความปลอดภัย}
 
-\loremipsum\loremipsum\loremipsum
+\subsection{ISO/IEC 27001:2022 - Information Security Management}
 
-\section{Overfull hbox}
+ISO/IEC 27001~\cite{iso27001} เป็นมาตรฐานสากลสำหรับระบบการจัดการความมั่นคงปลอดภัยสารสนเทศ (Information Security Management System - ISMS) ที่กำหนดข้อกำหนดในการสร้าง ดำเนินการ บำรุงรักษา และปรับปรุงระบบจัดการความปลอดภัยอย่างต่อเนื่อง
 
-When the \verb.semifinal. option is passed to the \verb.cpecmu. document class,
-any line that is longer than the line width, i.e., an overfull hbox, will be
-highlighted with a black solid rule:
-\begin{center}
-\begin{minipage}{2em}
-juxtaposition
-\end{minipage}
-\end{center}
+หลักการสำคัญของ ISO/IEC 27001 ที่เกี่ยวข้องกับ VisScan:
+
+\begin{enumerate}
+    \item \textbf{Vulnerability Management (A.8.8)}: องค์กรต้องมีกระบวนการระบุ ประเมิน และจัดการกับช่องโหว่อย่างเป็นระบบ VisScan ตอบสนองข้อกำหนดนี้โดยการสแกนและรายงานช่องโหว่อย่างต่อเนื่อง
+    
+    \item \textbf{Secure Development Lifecycle (A.8.25)}: การพัฒนาซอฟต์แวร์ต้องคำนึงถึงความปลอดภัยในทุกขั้นตอน VisScan สนับสนุนโดยการตรวจสอบโค้ดและคอนเทนเนอร์ตั้งแต่ระยะพัฒนา
+    
+    \item \textbf{Information Security in Project Management (A.5.8)}: โครงการพัฒนาซอฟต์แวร์ต้องรวมความปลอดภัยเป็นส่วนหนึ่งของกระบวนการ
+\end{enumerate}
+
+\subsection{NIST SP 800-190 - Application Container Security Guide}
+
+NIST SP 800-190~\cite{nist800-190} เป็นคู่มือด้านความปลอดภัยสำหรับ Application Container ที่จัดทำโดย National Institute of Standards and Technology ของสหรัฐอเมริกา เอกสารนี้ระบุความเสี่ยงและแนวทางการรักษาความปลอดภัยสำหรับเทคโนโลยีคอนเทนเนอร์
+
+ความเสี่ยงหลักที่ NIST SP 800-190 ระบุ:
+
+\begin{enumerate}
+    \item \textbf{Image Vulnerabilities}: ช่องโหว่ในซอฟต์แวร์ที่รวมอยู่ใน Container Image
+    \item \textbf{Image Configuration Defects}: การตั้งค่าที่ไม่ปลอดภัยในการสร้าง Image
+    \item \textbf{Embedded Malware}: มัลแวร์ที่ถูกฝังไว้ใน Image
+    \item \textbf{Embedded Clear Text Secrets}: ข้อมูลลับที่ถูกฝังไว้ใน Image แบบ Plain Text
+    \item \textbf{Untrusted Images}: การใช้ Image จากแหล่งที่ไม่น่าเชื่อถือ
+\end{enumerate}
+
+แนวทางที่แนะนำ:
+\begin{itemize}
+    \item สแกนหาช่องโหว่ใน Image ก่อน Deploy
+    \item ใช้ Image จาก Trusted Registry เท่านั้น
+    \item อัปเดต Image และ Base Image อย่างสม่ำเสมอ
+    \item ไม่ฝังข้อมูลลับไว้ใน Image โดยตรง
+    \item ใช้ Principle of Least Privilege ในการตั้งค่า Container
+\end{itemize}
+
+VisScan ตอบสนองต่อแนวทางเหล่านี้โดยการใช้ Trivy สแกน Container Image และ Gitleaks ตรวจหาข้อมูลลับที่อาจถูกฝังไว้
+
+\subsection{OWASP Top 10}
+
+OWASP Top 10~\cite{owasp2021} เป็นรายการช่องโหว่ด้านความปลอดภัยที่พบบ่อยและร้ายแรงที่สุดในแอปพลิเคชันเว็บ จัดทำโดย Open Web Application Security Project รายการล่าสุด (2021) ประกอบด้วย:
+
+\begin{enumerate}
+    \item \textbf{A01:2021 - Broken Access Control}: ปัญหาการควบคุมการเข้าถึง
+    \item \textbf{A02:2021 - Cryptographic Failures}: ความล้มเหลวในการเข้ารหัส
+    \item \textbf{A03:2021 - Injection}: ช่องโหว่ Injection เช่น SQL Injection
+    \item \textbf{A04:2021 - Insecure Design}: การออกแบบที่ไม่ปลอดภัย
+    \item \textbf{A05:2021 - Security Misconfiguration}: การตั้งค่าที่ไม่ปลอดภัย
+    \item \textbf{A06:2021 - Vulnerable and Outdated Components}: การใช้ส่วนประกอบที่มีช่องโหว่
+    \item \textbf{A07:2021 - Identification and Authentication Failures}: ปัญหาการยืนยันตัวตน
+    \item \textbf{A08:2021 - Software and Data Integrity Failures}: ปัญหาความสมบูรณ์ของข้อมูล
+    \item \textbf{A09:2021 - Security Logging and Monitoring Failures}: ปัญหาการบันทึกและเฝ้าระวัง
+    \item \textbf{A10:2021 - Server-Side Request Forgery (SSRF)}: ช่องโหว่ SSRF
+\end{enumerate}
+
+Semgrep ที่ใช้ใน VisScan สามารถตรวจจับช่องโหว่หลายประเภทที่อยู่ใน OWASP Top 10 โดยเฉพาะ Injection, Security Misconfiguration และ Vulnerable Components
+
+\section{เครื่องมือตรวจสอบความปลอดภัย}
+
+\subsection{Trivy}
+
+Trivy~\cite{trivy} เป็น Open-source Vulnerability Scanner ที่พัฒนาโดย Aqua Security มีความสามารถหลักดังนี้:
+
+\begin{itemize}
+    \item \textbf{Container Image Scanning}: สแกนช่องโหว่ใน Container Image รองรับหลายรูปแบบ เช่น Docker, OCI
+    \item \textbf{Filesystem Scanning}: สแกนระบบไฟล์และ Dependencies
+    \item \textbf{Git Repository Scanning}: สแกนช่องโหว่โดยตรงจาก Git Repository
+    \item \textbf{Kubernetes Scanning}: ตรวจสอบการตั้งค่า Kubernetes
+    \item \textbf{Multi-language Support}: รองรับหลายภาษา เช่น Go, Python, JavaScript, Java, Ruby
+\end{itemize}
+
+Trivy ใช้ฐานข้อมูลช่องโหว่จากหลายแหล่ง:
+\begin{itemize}
+    \item National Vulnerability Database (NVD)
+    \item Red Hat Security Data
+    \item Debian Security Bug Tracker
+    \item Alpine Linux Security Database
+    \item และอื่น ๆ
+\end{itemize}
+
+ข้อดีของ Trivy:
+\begin{itemize}
+    \item รวดเร็ว สแกน Image ได้ภายในไม่กี่วินาที
+    \item ฐานข้อมูลช่องโหว่ครอบคลุมและอัปเดตอัตโนมัติ
+    \item รองรับหลาย Output Format (JSON, SARIF, Table)
+    \item ใช้งานง่าย ไม่ต้องติดตั้งฐานข้อมูลเพิ่มเติม
+    \item ตรวจจับ Misconfiguration ในไฟล์ IaC (Terraform, Kubernetes YAML)
+\end{itemize}
+
+\subsection{Gitleaks}
+
+Gitleaks~\cite{gitleaks} เป็นเครื่องมือ SAST สำหรับการตรวจจับข้อมูลลับที่รั่วไหล (Secret Detection) ใน Git Repository โดยสแกนหา:
+
+\begin{itemize}
+    \item API Keys และ Access Tokens
+    \item Database Credentials (Username/Password)
+    \item Private Keys (SSH, TLS/SSL)
+    \item OAuth Tokens
+    \item AWS Credentials
+    \item Google Cloud Keys
+    \item และข้อมูลลับอื่น ๆ
+\end{itemize}
+
+คุณสมบัติสำคัญ:
+\begin{itemize}
+    \item \textbf{Pre-commit Scanning}: สามารถใช้เป็น Git Hook ตรวจสอบก่อน Commit
+    \item \textbf{Historical Scanning}: สแกน Git History ทั้งหมดหาข้อมูลลับที่ผ่านมา
+    \item \textbf{Custom Rules}: รองรับการสร้าง Custom Rules สำหรับตรวจจับรูปแบบเฉพาะ
+    \item \textbf{Fast Performance}: ใช้ Algorithm ที่มีประสิทธิภาพสูง
+\end{itemize}
+
+Gitleaks ใช้ Regular Expression และ Entropy Analysis เพื่อตรวจจับข้อมูลลับ โดยมี Ruleset ที่ครอบคลุมสำหรับบริการและแพลตฟอร์มยอดนิยม
+
+\subsection{Semgrep}
+
+Semgrep~\cite{semgrep} เป็น Static Analysis Engine ที่พัฒนาโดย Semgrep Inc. (r2c) เป็นเครื่องมือที่ใช้ Pattern Matching แบบ Lightweight เพื่อหาจุดที่มีปัญหาในโค้ด
+
+คุณสมบัติหลัก:
+\begin{itemize}
+    \item \textbf{Multi-language Support}: รองรับมากกว่า 30 ภาษา รวมถึง Python, JavaScript, TypeScript, Java, Go, C, C++, Ruby
+    \item \textbf{Easy Rule Writing}: ใช้ Syntax ที่คล้ายกับภาษาโปรแกรมจริง ทำให้เขียน Rule ได้ง่าย
+    \item \textbf{Fast Scanning}: เร็วกว่า Traditional SAST Tools หลายเท่า
+    \item \textbf{Low False Positives}: มีอัตรา False Positive ต่ำ
+    \item \textbf{Security Rules}: มี Ruleset สำเร็จรูปจาก OWASP Top 10 และ CWE
+\end{itemize}
+
+Semgrep Registry ให้บริการ Rules มากกว่า 2,000 Rules ที่ครอบคลุม:
+\begin{itemize}
+    \item Security Vulnerabilities (OWASP Top 10)
+    \item Code Quality Issues
+    \item Performance Problems
+    \item Common Anti-patterns
+\end{itemize}
+
+ข้อดีเมื่อเทียบกับเครื่องมืออื่น:
+\begin{itemize}
+    \item เร็วกว่า Traditional SAST เช่น Fortify, Checkmarx
+    \item ตั้งค่าง่ายกว่า Complex SAST Tools
+    \item รองรับ CI/CD Integration ได้ดี
+    \item Community-driven Rules
+\end{itemize}
+
+\section{เทคโนโลยี Container และ Orchestration}
+
+\subsection{Docker}
+
+Docker~\cite{docker2014} เป็นแพลตฟอร์ม Container ที่ใช้ในการสร้าง Deploy และรันแอปพลิเคชันในสภาพแวดล้อมที่แยกออกมา (Isolated Environment) ความสำคัญของ Docker ต่อ VisScan:
+
+\begin{itemize}
+    \item ใช้รันเครื่องมือสแกนแบบ Isolated ป้องกันผลกระทบต่อระบบหลัก
+    \item รองรับการสแกน Container Image เพื่อหาช่องโหว่
+    \item ใช้ในการ Deploy ระบบ VisScan เอง
+\end{itemize}
+
+\subsection{Kubernetes}
+
+Kubernetes~\cite{kubernetes2016} เป็น Container Orchestration Platform ที่ใช้จัดการ Container ในสภาพแวดล้อม Production เกี่ยวข้องกับ VisScan ในด้าน:
+
+\begin{itemize}
+    \item การ Deploy VisScan บน Kubernetes Cluster
+    \item การสแกนความปลอดภัยของ Kubernetes Configuration
+    \item การบูรณาการกับ Admission Controller เพื่อตรวจสอบก่อน Deploy
+\end{itemize}
+
+\section{สรุป}
+
+ทฤษฎีและเทคโนโลยีที่กล่าวมาในบทนี้เป็นพื้นฐานสำคัญในการพัฒนาระบบ VisScan โดยเฉพาะหลักการ DevSecOps, มาตรฐานสากล (ISO/IEC 27001, NIST SP 800-190), และเครื่องมือสแกนความปลอดภัย (Trivy, Gitleaks, Semgrep) การนำความรู้เหล่านี้มาประยุกต์ใช้จะทำให้ระบบมีความสมบูรณ์และตอบสนองความต้องการด้านความปลอดภัยขององค์กรได้อย่างมีประสิทธิภาพ
+
+
+
+
 
 \section{\ifenglish%
 \ifcpe CPE \else ISNE \fi knowledge used, applied, or integrated in this project
@@ -116,7 +253,8 @@ juxtaposition
 \fi
 }
 
-อธิบายถึงความรู้ และแนวทางการนำความรู้ต่างๆ ที่ได้เรียนตามหลักสูตร ซึ่งถูกนำมาใช้ในโครงงาน
+โครงงาน VisScan ได้นำความรู้จากหลักสูตรวิศวกรรมซอฟต์แวร์มาใช้ในการวางแผนและพัฒนาระบบ เช่น การจัดการวงจรชีวิตซอฟต์แวร์ (SDLC) การใช้แนวคิด Agile ในการแบ่งงานและปรับปรุงอย่างต่อเนื่อง รวมถึงการออกแบบฐานข้อมูล PostgreSQL โดยอาศัยหลักการของวิชา Database Systems เพื่อให้สามารถจัดเก็บและบริหารข้อมูลได้อย่างมีประสิทธิภาพ นอกจากนี้ยังประยุกต์ใช้ความรู้ด้านเครือข่ายคอมพิวเตอร์ เช่น การออกแบบ RESTful API และการสื่อสารผ่านโปรโตคอล HTTP เพื่อเชื่อมต่อระบบ Frontend และ Backend อย่างปลอดภัยและมีประสิทธิภาพ
+
 
 \section{\ifenglish%
 Extracurricular knowledge used, applied, or integrated in this project
@@ -125,4 +263,4 @@ Extracurricular knowledge used, applied, or integrated in this project
 \fi
 }
 
-อธิบายถึงความรู้ต่างๆ ที่เรียนรู้ด้วยตนเอง และแนวทางการนำความรู้เหล่านั้นมาใช้ในโครงงาน
+ในการพัฒนาโครงงาน VisScan นักศึกษาได้ศึกษาค้นคว้าความรู้เพิ่มเติมนอกหลักสูตรเกี่ยวกับแนวคิด DevSecOps การรักษาความปลอดภัยของคอนเทนเนอร์ (Container Security) โดยเฉพาะการใช้งาน Docker และ Kubernetes รวมถึงการบูรณาการเครื่องมือด้านความปลอดภัย เช่น Trivy, Gitleaks และ Semgrep เข้ากับเฟรมเวิร์ก Next.js เพื่อให้ระบบสามารถตรวจสอบและรายงานช่องโหว่ได้อย่างมีประสิทธิภาพและสอดคล้องกับมาตรฐานอุตสาหกรรม

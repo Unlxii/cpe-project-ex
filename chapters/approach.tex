@@ -5,93 +5,345 @@
 \fi
 }
 
-ในบทนี้จะกล่าวถึงหลักการ และการออกแบบระบบ
+ในบทนี้จะอธิบายถึงสถาปัตยกรรมของระบบ VisScan การออกแบบโครงสร้าง และขั้นตอนการทำงานของระบบแต่ละส่วน รวมถึงวิธีการบูรณาการเข้ากับแพลตฟอร์ม VisOperation
 
-\makeatletter
+\section{สถาปัตยกรรมระบบโดยรวม}
 
-% \renewcommand\section{\@startsection {section}{1}{\z@}%
-%                                    {13.5ex \@plus -1ex \@minus -.2ex}%
-%                                    {2.3ex \@plus.2ex}%
-%                                    {\normalfont\large\bfseries}}
+ระบบ VisScan ออกแบบตามแนวคิด Microservices Architecture เพื่อให้มีความยืดหยุ่น ขยายได้ง่าย และสามารถบำรุงรักษาได้สะดวก โดยประกอบด้วยส่วนประกอบหลักดังนี้:
 
-\makeatother
-%\vspace{2ex}
-% \titleformat{\section}{\normalfont\bfseries}{\thesection}{1em}{}
-% \titlespacing*{\section}{0pt}{10ex}{0pt}
+\subsection{ส่วนประกอบหลักของระบบ}
 
-\section{Alice in Wonderland}
+\begin{enumerate}
+    \item \textbf{Frontend Layer (Web Application)}
+    \begin{itemize}
+        \item พัฒนาด้วย Next.js และ React
+        \item ใช้ Tailwind CSS สำหรับ UI/UX Design
+        \item บูรณาการเข้ากับ VisOperation Platform ผ่าน SSO และ API Gateway
+        \item แสดงผลการสแกน Dashboard, Report, และ Configuration Interface
+    \end{itemize}
+    
+    \item \textbf{API Gateway}
+    \begin{itemize}
+        \item ทำหน้าที่เป็นจุดเชื่อมต่อหลักระหว่าง Frontend และ Backend Services
+        \item จัดการ Authentication และ Authorization ร่วมกับ VisOperation
+        \item Route Request ไปยัง Backend Service ที่เหมาะสม
+        \item Rate Limiting และ Request Validation
+    \end{itemize}
+    
+    \item \textbf{Backend Services}
+    \begin{itemize}
+        \item \textbf{Scan Orchestration Service}: จัดการ Workflow การสแกน, Queue Management, และ Job Scheduling
+        \item \textbf{Scanner Manager Service}: ควบคุมและเรียกใช้เครื่องมือสแกน (Trivy, Gitleaks, Semgrep)
+        \item \textbf{Result Processing Service}: ประมวลผล Normalize และจัดเก็บผลการสแกน
+        \item \textbf{Notification Service}: จัดการการแจ้งเตือนผ่าน Email, Slack, Webhook
+        \item \textbf{Project Management Service}: จัดการข้อมูลโปรเจกต์ และการตั้งค่า
+    \end{itemize}
+    
+    \item \textbf{Database Layer}
+    \begin{itemize}
+        \item PostgreSQL สำหรับเก็บข้อมูล Structured Data
+        \item Schema ออกแบบด้วย Prisma ORM
+        \item รองรับ Transaction และ ACID Properties
+    \end{itemize}
+    
+    \item \textbf{Storage Layer}
+    \begin{itemize}
+        \item File Storage สำหรับเก็บ Scan Reports และ Source Code ชั่วคราว
+        \item Container Registry Integration สำหรับดึง Container Image
+    \end{itemize}
+    
+    \item \textbf{Security Scanning Engines}
+    \begin{itemize}
+        \item Trivy Container: รันใน Isolated Container
+        \item Gitleaks Container: รันใน Isolated Container
+        \item Semgrep Container: รันใน Isolated Container
+    \end{itemize}
+\end{enumerate}
 
-\begin{figure}
-\begin{center}
-\includegraphics{800px-Briny_Beach.jpg}
-\end{center}
-\caption[Poem]{The Walrus and the Carpenter}
-\label{fig:walrus}
-\end{figure}
+\subsection{การบูรณาการกับ VisOperation Platform}
 
-\subsection{The Black Kitten}
-  One thing was certain, that the WHITE kitten had had nothing to
-do with it:---it was the black kitten's fault entirely~\cite{aiw}.  For the
-white kitten had been having its face washed by the old cat for
-the last quarter of an hour (and bearing it pretty well,
-considering); so you see that it COULDN'T have had any hand in
-the mischief.
+VisScan ออกแบบมาเพื่อทำงานร่วมกับ VisOperation อย่างไร้รอยต่อ:
 
-  The way Dinah washed her children's faces was this:  first she
-held the poor thing down by its ear with one paw, and then with
-the other paw she rubbed its face all over, the wrong way,
-beginning at the nose:  and just now, as I said, she was hard at
-work on the white kitten, which was lying quite still and trying
-to purr---no doubt feeling that it was all meant for its good.
+\begin{itemize}
+    \item \textbf{Single Sign-On (SSO)}: ใช้ระบบ Authentication เดียวกันกับ VisOperation ผู้ใช้ไม่ต้อง Login ซ้ำ
+    \item \textbf{Unified Dashboard}: VisScan Dashboard แสดงผลภายใน VisOperation Platform
+    \item \textbf{API Integration}: VisScan ให้บริการ REST API สำหรับให้ VisOperation เรียกใช้
+    \item \textbf{Shared Database}: บางข้อมูลเช่น Project, User, Permission ใช้ร่วมกับ VisOperation
+    \item \textbf{Webhook Integration}: VisScan รับ Event จาก VisOperation เช่น New Deployment, Git Push
+\end{itemize}
 
-  But the black kitten had been finished with earlier in the
-afternoon, and so, while Alice was sitting curled up in a corner
-of the great arm-chair, half talking to herself and half asleep,
-the kitten had been having a grand game of romps with the ball of
-worsted Alice had been trying to wind up, and had been rolling it
-up and down till it had all come undone again; and there it was,
-spread over the hearth-rug, all knots and tangles, with the
-kitten running after its own tail in the middle.
+\section{Data Flow และ Workflow}
 
-\subsection{The Reproach}
+\subsection{Workflow การสแกนซอร์สโค้ด}
 
-  `Oh, you wicked little thing!' cried Alice, catching up the
-kitten, and giving it a little kiss to make it understand that it
-was in disgrace.  `Really, Dinah ought to have taught you better
-manners!  You OUGHT, Dinah, you know you ought!' she added,
-looking reproachfully at the old cat, and speaking in as cross a
-voice as she could manage---and then she scrambled back into the
-arm-chair, taking the kitten and the worsted with her, and began
-winding up the ball again.  But she didn't get on very fast, as
-she was talking all the time, sometimes to the kitten, and
-sometimes to herself.  Kitty sat very demurely on her knee,
-pretending to watch the progress of the winding, and now and then
-putting out one paw and gently touching the ball, as if it would
-be glad to help, if it might.
+ขั้นตอนการทำงานเมื่อผู้ใช้ต้องการสแกนซอร์สโค้ด:
 
-  `Do you know what to-morrow is, Kitty?' Alice began.  `You'd
-have guessed if you'd been up in the window with me---only Dinah
-was making you tidy, so you couldn't.  I was watching the boys
-getting in stick for the bonfire---and it wants plenty of
-sticks, Kitty!  Only it got so cold, and it snowed so, they had
-to leave off.  Never mind, Kitty, we'll go and see the bonfire
-to-morrow.'  Here Alice wound two or three turns of the worsted
-round the kitten's neck, just to see how it would look:  this led
-to a scramble, in which the ball rolled down upon the floor, and
-yards and yards of it got unwound again.
+\begin{enumerate}
+    \item \textbf{Initiation}: ผู้ใช้เริ่มต้นการสแกนผ่าน Web UI หรือ API โดยระบุ Git Repository URL หรืออัปโหลด Source Code
+    
+    \item \textbf{Authentication \& Authorization}: ระบบตรวจสอบสิทธิ์ผู้ใช้และสิทธิ์เข้าถึง Repository
+    
+    \item \textbf{Code Retrieval}: ระบบ Clone หรือ Download ซอร์สโค้ดมาเก็บไว้ใน Temporary Storage
+    
+    \item \textbf{Scan Job Creation}: Scan Orchestration Service สร้าง Scan Job และเพิ่มเข้า Queue
+    
+    \item \textbf{Scanner Execution}: Scanner Manager Service เรียกใช้เครื่องมือสแกนตามที่กำหนด:
+    \begin{itemize}
+        \item Gitleaks สำหรับตรวจจับ Secret Leakage
+        \item Semgrep สำหรับ SAST
+        \item Trivy สำหรับ Dependency Scanning (SCA)
+    \end{itemize}
+    
+    \item \textbf{Result Collection}: แต่ละ Scanner ส่งผลลัพธ์กลับมาในรูปแบบ JSON
+    
+    \item \textbf{Result Normalization}: Result Processing Service แปลงผลลัพธ์จากแต่ละเครื่องมือให้เป็นรูปแบบมาตรฐาน
+    
+    \item \textbf{Severity Classification}: จัดลำดับความรุนแรงของช่องโหว่เป็น Critical, High, Medium, Low
+    
+    \item \textbf{Data Storage}: บันทึกผลลัพธ์ลงฐานข้อมูล PostgreSQL
+    
+    \item \textbf{Notification}: หากพบปัญหาที่มีความรุนแรงสูง ระบบจะส่งการแจ้งเตือน
+    
+    \item \textbf{Cleanup}: ลบ Source Code ชั่วคราวออกจากระบบ
+    
+    \item \textbf{Report Generation}: สร้างรายงานสรุปผลการสแกน
+\end{enumerate}
 
-  `Do you know, I was so angry, Kitty,' Alice went on as soon as
-they were comfortably settled again, `when I saw all the mischief
-you had been doing, I was very nearly opening the window, and
-putting you out into the snow!  And you'd have deserved it, you
-little mischievous darling!  What have you got to say for
-yourself?  Now don't interrupt me!' she went on, holding up one
-finger.  `I'm going to tell you all your faults.  Number one:
-you squeaked twice while Dinah was washing your face this
-morning.  Now you can't deny it, Kitty:  I heard you!  What that
-you say?' (pretending that the kitten was speaking.)  `Her paw
-went into your eye?  Well, that's YOUR fault, for keeping your
-eyes open---if you'd shut them tight up, it wouldn't have
-happened.  Now don't make any more excuses, but listen!  Number
-two:  you pulled Snowdrop away by the tail just as I had put down
-the saucer of milk before her!  What, you were thirsty, were you?
+\subsection{Workflow การสแกน Container Image}
+
+ขั้นตอนการทำงานเมื่อผู้ใช้ต้องการสแกน Container Image:
+
+\begin{enumerate}
+    \item \textbf{Image Specification}: ผู้ใช้ระบุ Container Image ที่ต้องการสแกน (Image Name:Tag)
+    
+    \item \textbf{Registry Authentication}: หาก Image อยู่ใน Private Registry ระบบจะใช้ Credentials ที่กำหนดไว้
+    
+    \item \textbf{Image Pulling}: ดึง Container Image จาก Registry มาเก็บไว้ชั่วคราว (หรือใช้ Remote Scan)
+    
+    \item \textbf{Trivy Scanning}: เรียกใช้ Trivy ในการสแกนหา:
+    \begin{itemize}
+        \item OS Package Vulnerabilities
+        \item Application Library Vulnerabilities
+        \item Misconfiguration in Dockerfile
+        \item Sensitive Information
+    \end{itemize}
+    
+    \item \textbf{SBOM Generation}: Trivy สร้าง Software Bill of Materials (SBOM) ระบุ Component ทั้งหมดใน Image
+    
+    \item \textbf{Vulnerability Matching}: เปรียบเทียบ Component กับฐานข้อมูลช่องโหว่
+    
+    \item \textbf{Result Processing}: ประมวลผลและจัดกลุ่มช่องโหว่ตามความรุนแรง
+    
+    \item \textbf{Storage \& Notification}: เก็บผลลัพธ์และแจ้งเตือนเช่นเดียวกับ Source Code Scanning
+\end{enumerate}
+
+\subsection{CI/CD Pipeline Integration Workflow}
+
+การทำงานเมื่อบูรณาการเข้ากับ CI/CD Pipeline:
+
+\begin{enumerate}
+    \item \textbf{Pipeline Trigger}: CI/CD Pipeline เรียกใช้ VisScan API เมื่อมีการ Build หรือ Deploy
+    
+    \item \textbf{Pre-deployment Scan}: VisScan สแกน Image ก่อน Deploy จริง
+    
+    \item \textbf{Policy Enforcement}: ตรวจสอบว่าผลการสแกนผ่านเกณฑ์ที่กำหนดหรือไม่:
+    \begin{itemize}
+        \item ไม่มีช่องโหว่ระดับ Critical
+        \item จำนวนช่องโหว่ระดับ High ไม่เกินที่กำหนด
+        \item ไม่มี Secret Leakage
+    \end{itemize}
+    
+    \item \textbf{Pipeline Decision}: ส่งผลลัพธ์กลับไปยัง Pipeline:
+    \begin{itemize}
+        \item Pass: อนุญาตให้ Deploy
+        \item Fail: หยุด Pipeline และแจ้งเตือนทีมพัฒนา
+    \end{itemize}
+\end{enumerate}
+
+\section{Database Schema Design}
+
+โครงสร้างฐานข้อมูลออกแบบด้วย Prisma ORM ประกอบด้วย Entity หลัก:
+
+\subsection{Entity หลัก}
+
+\begin{enumerate}
+    \item \textbf{Project}
+    \begin{itemize}
+        \item id, name, description
+        \item repository\_url, branch
+        \item created\_at, updated\_at
+        \item owner\_id (Foreign Key)
+    \end{itemize}
+    
+    \item \textbf{Scan}
+    \begin{itemize}
+        \item id, project\_id (Foreign Key)
+        \item scan\_type (source\_code, container\_image)
+        \item status (pending, running, completed, failed)
+        \item started\_at, completed\_at
+        \item triggered\_by (user, ci\_cd, scheduled)
+    \end{itemize}
+    
+    \item \textbf{Vulnerability}
+    \begin{itemize}
+        \item id, scan\_id (Foreign Key)
+        \item scanner\_name (trivy, gitleaks, semgrep)
+        \item title, description
+        \item severity (critical, high, medium, low, info)
+        \item cve\_id (ถ้ามี)
+        \item file\_path, line\_number
+        \item remediation\_advice
+    \end{itemize}
+    
+    \item \textbf{Secret}
+    \begin{itemize}
+        \item id, scan\_id (Foreign Key)
+        \item secret\_type (api\_key, password, token, etc.)
+        \item file\_path, line\_number
+        \item match\_string (masked)
+        \item confidence\_level
+    \end{itemize}
+    
+    \item \textbf{ContainerImage}
+    \begin{itemize}
+        \item id, project\_id (Foreign Key)
+        \item image\_name, image\_tag
+        \item registry\_url
+        \item digest (SHA256)
+        \item size\_bytes
+        \item created\_at
+    \end{itemize}
+    
+    \item \textbf{Notification}
+    \begin{itemize}
+        \item id, scan\_id (Foreign Key)
+        \item notification\_type (email, slack, webhook)
+        \item recipient, status
+        \item sent\_at
+    \end{itemize}
+    
+    \item \textbf{Policy}
+    \begin{itemize}
+        \item id, project\_id (Foreign Key)
+        \item max\_critical, max\_high
+        \item block\_on\_secret\_leak (boolean)
+        \item notification\_settings (JSON)
+    \end{itemize}
+\end{enumerate}
+
+\subsection{ความสัมพันธ์ระหว่าง Entity}
+
+\begin{itemize}
+    \item Project 1:N Scan (หนึ่ง Project มีหลาย Scan)
+    \item Scan 1:N Vulnerability (หนึ่ง Scan พบหลาย Vulnerability)
+    \item Scan 1:N Secret (หนึ่ง Scan พบหลาย Secret)
+    \item Project 1:N ContainerImage (หนึ่ง Project มีหลาย Image)
+    \item Project 1:1 Policy (หนึ่ง Project มีหนึ่ง Policy)
+\end{itemize}
+
+\section{API Design}
+
+VisScan ให้บริการ RESTful API สำหรับการเชื่อมต่อกับระบบอื่น
+
+\subsection{Core API Endpoints}
+
+\begin{enumerate}
+    \item \textbf{Scan Management}
+    \begin{itemize}
+        \item POST /api/v1/scans/source-code - เริ่มการสแกนซอร์สโค้ด
+        \item POST /api/v1/scans/container-image - เริ่มการสแกน Container Image
+        \item GET /api/v1/scans/\{scanId\} - ดูข้อมูล Scan
+        \item GET /api/v1/scans/\{scanId\}/status - ตรวจสอบสถานะ Scan
+        \item GET /api/v1/scans/\{scanId\}/results - ดูผลการสแกน
+    \end{itemize}
+    
+    \item \textbf{Project Management}
+    \begin{itemize}
+        \item GET /api/v1/projects - ดูรายการ Project
+        \item POST /api/v1/projects - สร้าง Project ใหม่
+        \item GET /api/v1/projects/\{projectId\} - ดูข้อมูล Project
+        \item PUT /api/v1/projects/\{projectId\} - แก้ไข Project
+        \item DELETE /api/v1/projects/\{projectId\} - ลบ Project
+    \end{itemize}
+    
+    \item \textbf{Vulnerability Management}
+    \begin{itemize}
+        \item GET /api/v1/vulnerabilities - ดูรายการช่องโหว่ทั้งหมด
+        \item GET /api/v1/vulnerabilities/\{vulnId\} - ดูรายละเอียดช่องโหว่
+        \item PUT /api/v1/vulnerabilities/\{vulnId\}/status - อัปเดตสถานะ (acknowledged, fixed, false\_positive)
+    \end{itemize}
+    
+    \item \textbf{Policy Management}
+    \begin{itemize}
+        \item GET /api/v1/projects/\{projectId\}/policy - ดู Policy
+        \item PUT /api/v1/projects/\{projectId\}/policy - อัปเดต Policy
+    \end{itemize}
+    
+    \item \textbf{Webhook Integration}
+    \begin{itemize}
+        \item POST /api/v1/webhooks/github - รับ Event จาก GitHub
+        \item POST /api/v1/webhooks/gitlab - รับ Event จาก GitLab
+    \end{itemize}
+\end{enumerate}
+
+\section{Security Design}
+
+\subsection{Authentication และ Authorization}
+
+\begin{itemize}
+    \item ใช้ JWT (JSON Web Token) สำหรับ Authentication
+    \item บูรณาการกับ VisOperation SSO
+    \item Role-Based Access Control (RBAC): Admin, Developer, Viewer
+    \item API Key สำหรับ CI/CD Integration
+\end{itemize}
+
+\subsection{Data Protection}
+
+\begin{itemize}
+    \item เข้ารหัสข้อมูลลับใน Database (Credentials, API Keys) ด้วย AES-256
+    \item ใช้ HTTPS สำหรับการสื่อสารทั้งหมด
+    \item Automatic cleanup ของ Source Code และ Sensitive Data หลังสแกนเสร็จ
+    \item Access Logging และ Audit Trail
+\end{itemize}
+
+\subsection{Isolation และ Resource Management}
+
+\begin{itemize}
+    \item แต่ละ Scan Job รันใน Isolated Container
+    \item Resource Limits (CPU, Memory, Storage) สำหรับแต่ละ Scanner
+    \item Timeout Mechanism ป้องกัน Long-running Jobs
+    \item Network Isolation ระหว่าง Scanner Container
+\end{itemize}
+
+\section{Scalability และ Performance}
+
+\subsection{Horizontal Scaling}
+
+\begin{itemize}
+    \item Backend Services สามารถ Scale Out ได้อิสระ
+    \item Job Queue (Redis/RabbitMQ) สำหรับ Distribute Scan Jobs
+    \item Multiple Scanner Instances ทำงานพร้อมกัน
+\end{itemize}
+
+\subsection{Caching Strategy}
+
+\begin{itemize}
+    \item Cache ผลการสแกนสำหรับ Image ที่มี Digest เดียวกัน
+    \item Cache ฐานข้อมูลช่องโหว่ของ Trivy (อัปเดตทุก 6 ชั่วโมง)
+    \item Redis Cache สำหรับ API Response ที่ Query บ่อย
+\end{itemize}
+
+\subsection{Performance Optimization}
+
+\begin{itemize}
+    \item Parallel Scanning: รัน Trivy, Gitleaks, Semgrep พร้อมกัน
+    \item Incremental Scanning: สแกนเฉพาะไฟล์ที่เปลี่ยนแปลง (สำหรับ Source Code)
+    \item Database Indexing สำหรับ Query ที่ใช้บ่อย
+    \item Async Processing สำหรับงานที่ไม่ต้องการผลลัพธ์ทันที
+\end{itemize}
+
+\section{สรุป}
+
+การออกแบบสถาปัตยกรรมของ VisScan คำนึงถึงความยืดหยุ่น ความปลอดภัย และประสิทธิภาพในการทำงาน การใช้ Microservices Architecture ทำให้สามารถขยายและบำรุงรักษาแต่ละส่วนได้อิสระ การบูรณาการกับ VisOperation Platform ทำให้ผู้ใช้สามารถเข้าถึงฟีเจอร์ความปลอดภัยได้อย่างสะดวก และการออกแบบ Workflow ที่มีประสิทธิภาพช่วยให้สามารถตรวจจับช่องโหว่ได้อย่างรวดเร็วและแม่นยำ
+...existing code...
+% ลบเนื้อหาตัวอย่าง The Black Kitten, The Reproach และข้อความภาษาอังกฤษที่ไม่เกี่ยวข้อง

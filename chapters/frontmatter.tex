@@ -2,24 +2,14 @@
 \makesignature
 
 \ifproject
-\begin{abstractTH}
-เขียนบทคัดย่อของโครงงานที่นี่
 
-การเขียนรายงานเป็นส่วนหนึ่งของการทำโครงงานวิศวกรรมคอมพิวเตอร์
-เพื่อทบทวนทฤษฎีที่เกี่ยวข้อง อธิบายขั้นตอนวิธีแก้ปัญหาเชิงวิศวกรรม และวิเคราะห์และสรุปผลการทดลองอุปกรณ์และระบบต่างๆ
-\enskip อย่างไรก็ดี การสร้างรูปเล่มรายงานให้ถูกรูปแบบนั้นเป็นขั้นตอนที่ยุ่งยาก
-แม้ว่าจะมีต้นแบบสำหรับใช้ในโปรแกรม Microsoft Word แล้วก็ตาม
-แต่นักศึกษาส่วนใหญ่ยังคงค้นพบว่าการใช้งานมีความซับซ้อน และเกิดความผิดพลาดในการจัดรูปแบบ กำหนดเลขหัวข้อ และสร้างสารบัญอยู่
-\enskip ภาควิชาวิศวกรรมคอมพิวเตอร์จึงได้จัดทำต้นแบบรูปเล่มรายงานโดยใช้ระบบจัดเตรียมเอกสาร
-\LaTeX{} เพื่อช่วยให้นักศึกษาเขียนรายงานได้อย่างสะดวกและรวดเร็วมากยิ่งขึ้น
+\begin{abstractTH}
+VisScan เป็นระบบตรวจสอบและวิเคราะห์ความปลอดภัยของซอร์สโค้ดและอิมเมจคอนเทนเนอร์ที่พัฒนาขึ้นเพื่อเสริมศักยภาพด้าน DevSecOps ภายในแพลตฟอร์ม VisOperation ระบบนี้ออกแบบมาเพื่อช่วยให้องค์กรสามารถตรวจจับช่องโหว่ ความผิดพลาดในการตั้งค่า และความเสี่ยงด้านความปลอดภัยที่อาจเกิดขึ้นในกระบวนการพัฒนาและปรับใช้แอปพลิเคชันได้อย่างรวดเร็วและแม่นยำ รองรับการสแกนซอร์สโค้ด การตรวจสอบ Secret Leakage การสแกนอิมเมจ Docker และการประเมินความปลอดภัยของคอนเทนเนอร์โดยใช้เครื่องมือมาตรฐานอุตสาหกรรม เช่น Trivy, Gitleaks และ Static Analysis Engine ต่าง ๆ อีกทั้งยังมีระบบจัดการผลการสแกน การแจ้งเตือน และการเชื่อมต่อเข้ากับ Pipeline อัตโนมัติ เพื่อให้ทีมพัฒนาและทีมปฏิบัติการสามารถดำเนินงานได้อย่างราบรื่นและปลอดภัยยิ่งขึ้น ด้วยการทำงานร่วมกับ VisOperation ทำให้ VisScan กลายเป็นส่วนประกอบสำคัญของโครงสร้างพื้นฐานด้านความปลอดภัย ช่วยเพิ่มความโปร่งใสในการตรวจสอบ ลดความเสี่ยงด้านความปลอดภัย และสนับสนุนการตัดสินใจเชิงปฏิบัติการขององค์กรได้อย่างมีประสิทธิภาพ
 \end{abstractTH}
 
-\begin{abstract}
-The abstract would be placed here. It usually does not exceed 350 words
-long (not counting the heading), and must not take up more than one (1) page
-(even if fewer than 350 words long).
 
-Make sure your abstract sits inside the \texttt{abstract} environment.
+\begin{abstract}
+VisScan is a security analysis system for source code and container images, developed to enhance DevSecOps capabilities within the VisOperation platform. Designed to assist organizations in rapidly and accurately detecting vulnerabilities, misconfigurations, and potential security risks during application development and deployment, the system supports source code scanning, secret leakage detection, Docker image scanning, and container security assessment using industry-standard tools such as Trivy, Gitleaks, and various Static Analysis Engines. Additionally, it features scan result management, notifications, and automated pipeline integration, facilitating smoother and more secure operations for development and operations teams. By integrating with VisOperation, VisScan becomes a crucial component of security infrastructure, increasing audit transparency, reducing security risks, and effectively supporting operational decision-making.
 \end{abstract}
 
 \iffalse
@@ -31,10 +21,9 @@ Dedication page is optional.
 \fi % \iffalse
 
 \begin{acknowledgments}
-Your acknowledgments go here. Make sure it sits inside the
-\texttt{acknowledgment} environment.
+ขอขอบพระคุณ ผศ.โดม โพธิกานนท์ (Asst. Prof. Dome Potikanond) อาจารย์ที่ปรึกษาโครงงาน ที่ให้คำแนะนำและสนับสนุนตลอดระยะเวลาการดำเนินโครงงานนี้ รวมถึงคณะกรรมการ ผศ.ดร.พฤษภ์ บุญมา (Asst. Prof. Dr. Pruet Boonma) และ ผศ.ดร.ศศิน จันทร์พวงทอง (Asst. Prof. Dr. Sasin Janpuangtong) ที่ให้ข้อเสนอแนะอันมีคุณค่าในการพัฒนาโครงงาน VisScan ให้สมบูรณ์ยิ่งขึ้น
 
-\acksign{2020}{5}{25}
+\acksign{2025}{10}{25}
 \end{acknowledgments}%
 \fi % \ifproject
 

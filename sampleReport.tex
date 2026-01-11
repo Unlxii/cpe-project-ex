@@ -4,18 +4,19 @@
 %% project template. If you are having trouble, see "cpecmu.pdf" for
 %% documentation.
 
-\projectNo{P069-1}
-\acadyear{2021}
+\projectNo{P814-2/68}
+\acadyear{2025}
 
-\titleTH{โครงงานสุดเลิฟของฉัน}
-\titleEN{Your Project Name Goes Here}
+\titleTH{ศูนย์ตรวจสอบความปลอดภัยโค้ดและคอนเทนเนอร์}
+\titleEN{VisScan: Code and Container Security Scanning Center}
 
-\author{นายกินรี ไทร์ล้ำเลิศ}{Kinnaree Tirelumlert}{690610696}
-\author{นายบรรจบ พบเอฟตลอด}{Banjob Pob-eftalord}{690610969}
+\author{นายรณชัย สิทธิโชคสถิต}{Mr.\,Ronnachai Sitthichoksathit}{650612098}
+\author{นายกิตติวัฒน์ ยะสารวรรณ}{Mr.\,Kittiwat Yasarawan}{650612079}
 
-\cpeadvisor{chinawat}
-\cpecommittee{paskorn}
-\committee{รศ.ดร.\,นิพนธ์ ธีรอำพน}{Assoc.\,Prof.\,Nipon Theera-Umpon, Ph.D.}
+\cpeadvisor{dome}
+\cpecommittee{pruet}
+\cpecommittee{sasin}
+\deptChair{navadon}
 
 %% Some possible packages to include:
 \usepackage[final]{graphicx} % for including graphics
@@ -69,6 +70,11 @@
 % \includeonly{chapters/intro,chapters/background}
 
 \begin{document}
+
+% Global prevention for Overfull \hbox
+\tolerance=5000
+\emergencystretch=3em
+\hfuzz=1pt
 \include{chapters/frontmatter}
 
 \pagestyle{empty}\cleardoublepage
@@ -96,9 +102,9 @@
 \ifindex\indexpage\fi
 
 \begin{biosketch}
-\begin{center}
-  \includegraphics[width=1.5in]{mugshot.jpg}
-\end{center}
+%\begin{center}
+%  \includegraphics[width=1.5in]{mugshot.jpg}
+%\end{center}
 Your biosketch goes here. Make sure it sits inside
 the \texttt{biosketch} environment.
 \end{biosketch}
